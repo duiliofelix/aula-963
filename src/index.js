@@ -1,15 +1,4 @@
-const express = require('express');
+const dotenv = require('dotenv');
+dotenv.config();
 
-const server = express();
-
-
-server.get('/', (request, response) => {
-    console.log(request, response);
-    response.send('ok');
-});
-
-
-
-server.listen(3000, () => {
-    console.log('Listening on 3000');
-});
+require('./server');

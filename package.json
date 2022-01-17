@@ -10,6 +10,7 @@
   "author": "Duilio Felix",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^14.2.0",
     "express": "^4.17.2"
   },
   "devDependencies": {
