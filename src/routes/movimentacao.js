@@ -1,24 +1,58 @@
-const { Router } = require('express');
+const { Router, query } = require('express');
+const MovimentacoesModel = require('../database/models/movimentacoes');
 
 const router = Router();
 
-router.get('/:tipo?', (request, response) => {
-    const movs = [
-        { id: 1, tipo: 'entrada', valor: 10, data: new Date() },
-        { id: 2, tipo: 'entrada', valor: 20, data: new Date() },
-        { id: 3, tipo: 'saida', valor: 10, data: new Date() },
-        { id: 4, tipo: 'saida', valor: 20, data: new Date() },
-    ];
+const getTypeFromRequest = (request) => {
+  switch (request) {
+    case 'e':
+    case 'Entrada':
+    case 'entrada':
+      return 'entrada';
+    case 's':
+    case 'saida':
+    case 'Saida':
+    default:
+      return 'saida';
+  }
+}
 
-    const filteredMovs = request.params.tipo ? movs.filter((mov) => mov.tipo === request.params.tipo) : movs;
-    const slicedMovs = request.query.limit ? filteredMovs.slice(0, request.query.limit) : filteredMovs;
+const toClientMovimentacoes = (movimentacoes) => movimentacoes.map((mov) => ({
+  tipo: mov.type,
+  valor: mov.value,
+  data: mov.date.format(),
+}));
 
-    response
-        .status(200)
-        .json({
-            status: 'ok',
-            movimentacoes: slicedMovs,
-        });
+router.get('/:tipo?', async (request, response) => {
+  const typeFilter = getTypeFromRequest(request);
+
+  const movimentacoes = await MovimentacoesModel.find({
+    type: typeFilter,
+  }, {
+    limit: Number(request.query.limit) || 0,
+  });
+
+  response
+    .status(200)
+    .json({
+       status: 'ok',
+       movimentacoes: toClientMovimentacoes(movimentacoes),
+    });
+});
+
+router.post('/', async (request, response) => {
+  const novaMovimentacao = new MovimentacoesModel();
+  novaMovimentacao.type = "entrada";
+  novaMovimentacao.value = 10;
+  novaMovimentacao.date = new Date();
+  await novaMovimentacao.save();
+
+  response
+    .status(201)
+    .json({
+        status: 'ok',
+        movimentacao: novaMovimentacao,
+    });
 });
 
 

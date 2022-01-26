@@ -1,12 +1,18 @@
 const {
     PORT = 3000,
-    DB_URL,
-    DB_PASS,
+    MONGO_USER,
+    MONGO_PASS,
+    MONGO_HOST,
+    MONGO_PORT,
+    MONGO_DB,
 } = process.env;
 
 
 module.exports = {
     PORT,
-    DB_URL,
-    DB_PASS,
+    MONGO_USER,
+    MONGO_PASS,
+    MONGO_HOST,
+    MONGO_PORT,
+    MONGO_DB,
 };

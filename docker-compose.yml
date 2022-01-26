@@ -1,0 +1,9 @@
+version: '3.7'
+
+services:
+  meu_banco_mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      DB_PASS: abc
