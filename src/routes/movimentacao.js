@@ -1,51 +1,40 @@
-const { Router, query } = require('express');
+const { Router } = require('express');
+const ParamNotFoundError = require('../errors/ParamNotFound');
+const {
+  createMovimentacao,
+  findMovimentacoesByType,
+  updateMovimentacaoById,
+} = require('../services/movimentacoes');
 const MovimentacoesModel = require('../database/models/movimentacoes');
 
 const router = Router();
 
-const getTypeFromRequest = (request) => {
-  switch (request) {
-    case 'e':
-    case 'Entrada':
-    case 'entrada':
-      return 'entrada';
-    case 's':
-    case 'saida':
-    case 'Saida':
-    default:
-      return 'saida';
-  }
-}
-
-const toClientMovimentacoes = (movimentacoes) => movimentacoes.map((mov) => ({
-  tipo: mov.type,
-  valor: mov.value,
-  data: mov.date.format(),
-}));
-
 router.get('/:tipo?', async (request, response) => {
-  const typeFilter = getTypeFromRequest(request);
+  const type = request.params.tipo;
+  const limit = Number(request.query.limit) || 0;
 
-  const movimentacoes = await MovimentacoesModel.find({
-    type: typeFilter,
-  }, {
-    limit: Number(request.query.limit) || 0,
-  });
+  if (!type) {
+    throw new ParamNotFoundError('tipo');
+  }
+
+  const movimentacoes = await findMovimentacoesByType(type, limit);
 
   response
     .status(200)
     .json({
        status: 'ok',
-       movimentacoes: toClientMovimentacoes(movimentacoes),
+       movimentacoes,
     });
 });
 
 router.post('/', async (request, response) => {
-  const novaMovimentacao = new MovimentacoesModel();
-  novaMovimentacao.type = "entrada";
-  novaMovimentacao.value = 10;
-  novaMovimentacao.date = new Date();
-  await novaMovimentacao.save();
+  const { tipo, valor, data } = request.body;
+
+  const novaMovimentacao = await createMovimentacao({
+    type: tipo,
+    value: valor,
+    date: data,
+  });
 
   response
     .status(201)
@@ -55,13 +44,50 @@ router.post('/', async (request, response) => {
     });
 });
 
+router.put('/:id', async (request, response) => {
+  const { tipo, valor, data } = request.body;
 
-router.delete('/:id', (request, response) => {
-    response
-        .status(200)
-        .json({
-            status: 'deleted',
-        });
+  await updateMovimentacaoById(request.params.id, {
+    type: tipo,
+    value: valor,
+    date: data,
+  });
+
+  response
+    .status(200)
+    .json({
+      status: 'ok',
+      movimentacao,
+    });
+});
+
+router.patch('/:id', async (request, response) => {
+  const movimentacao = await MovimentacoesModel.findById(request.params.id);
+
+  movimentacao.type = request.body.tipo;
+  movimentacao.value = request.body.valor;
+  movimentacao.date = request.body.data;
+
+  await movimentacao.save();
+  
+  response
+    .status(200)
+    .json({
+      status: 'ok',
+      movimentacao,
+    });
+});
+
+router.delete('/:id', async (request, response) => {
+  const movimentacao = await MovimentacoesModel.findById(request.params.id);
+
+  await movimentacao.delete();
+
+  response
+    .status(200)
+    .json({
+      status: 'ok',
+    });
 });
 
 module.exports = router;

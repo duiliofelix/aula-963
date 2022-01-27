@@ -12,6 +12,8 @@ server.use(logger);
 server.use('/banco', bankRouter);
 server.use('/movimentacoes', movRouter);
 
+server.use(handleErrors);
+
 server.listen(PORT, () => {
-    console.log(`Listening on ${PORT}`);
+  console.log(`Listening on ${PORT}`);
 });
