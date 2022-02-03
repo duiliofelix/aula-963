@@ -21,9 +21,9 @@ router.get('/:tipo?', async (request, response) => {
 
   response
     .status(200)
-    .json({
-       status: 'ok',
-       movimentacoes,
+    .sendPlus({
+      status: 'ok',
+      movimentacoes,
     });
 });
 
@@ -39,8 +39,8 @@ router.post('/', async (request, response) => {
   response
     .status(201)
     .json({
-        status: 'ok',
-        movimentacao: novaMovimentacao,
+      status: 'ok',
+      movimentacao: novaMovimentacao,
     });
 });
 
