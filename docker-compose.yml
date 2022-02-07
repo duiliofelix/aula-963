@@ -6,4 +6,5 @@ services:
     ports:
       - 27017:27017
     environment:
-      DB_PASS: abc
+      MONGO_INITDB_ROOT_USERNAME: aula693
+      MONGO_INITDB_ROOT_PASSWORD: aula693

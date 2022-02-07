@@ -5,10 +5,12 @@ const {
     MONGO_HOST,
     MONGO_PORT,
     MONGO_DB,
+    JWT_SALT,
 } = process.env;
 
 
 module.exports = {
+    JWT_SALT,
     PORT,
     MONGO_USER,
     MONGO_PASS,

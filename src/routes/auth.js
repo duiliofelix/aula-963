@@ -1,7 +1,8 @@
 const { Router } = require('express');
-const { v4: uuidv4 } = require('uuid');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const UserModel = require('../database/models/user');
+const { JWT_SALT } = require('../config');
 
 const router = Router();
 const saltRounds = 10;
@@ -14,13 +15,12 @@ router.post('/login', async (req, res) => {
     res.status(401).send('Unauthorized');
   }
 
-  user.token = uuidv4();
-  await user.save();
+  const token = jwt.sign({ username, role: 'client', expiresIn: 3000 }, JWT_SALT);
 
   res
     .status(200)
     .send({
-      token: user.token,
+      token,
     });
 });
 
