@@ -3,6 +3,7 @@ const {
     MONGO_USER,
     MONGO_PASS,
     MONGO_HOST,
+    MONGO_SERVER,
     MONGO_PORT,
     MONGO_DB,
     JWT_SALT,
@@ -15,6 +16,7 @@ module.exports = {
     MONGO_USER,
     MONGO_PASS,
     MONGO_HOST,
+    MONGO_SERVER,
     MONGO_PORT,
     MONGO_DB,
 };
