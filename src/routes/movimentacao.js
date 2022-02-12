@@ -9,19 +9,20 @@ const MovimentacoesModel = require('../database/models/movimentacoes');
 
 const router = Router();
 
-router.get('/:tipo?', async (request, response) => {
+router.get('/:tipo?', async (request, response, next) => {
   const type = request.params.tipo;
   const limit = Number(request.query.limit) || 0;
 
   if (!type) {
-    throw new ParamNotFoundError('tipo');
+    next(new ParamNotFoundError('tipo'));
+    return;
   }
 
   const movimentacoes = await findMovimentacoesByType(type, limit);
 
   response
     .status(200)
-    .sendPlus({
+    .send({
       status: 'ok',
       movimentacoes,
     });
